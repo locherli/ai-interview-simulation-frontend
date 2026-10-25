@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+./后端接口.md
+./项目需求文档.md
