@@ -66,6 +66,13 @@ class InterviewViewModel : ViewModel() {
         }
     }
 
+    fun resumeInterview(id: Long) {
+        viewModelScope.launch {
+            _uiState.value = InterviewUiState(phase = InterviewPhase.LOADING, interviewId = id)
+            fetchNextQuestion()
+        }
+    }
+
     fun fetchNextQuestion() {
         val interviewId = _uiState.value.interviewId ?: return
         viewModelScope.launch {

@@ -14,11 +14,13 @@ import com.example.ai.ui.viewmodel.*
 object Routes {
     const val LOGIN = "login"
     const val HOME = "home"
-    const val INTERVIEW = "interview/{category}"
+    const val INTERVIEW = "interview/{category}?interviewId={interviewId}"
     const val HISTORY = "history"
     const val INTERVIEW_DETAIL = "interview_detail/{interviewId}"
 
-    fun interview(category: String) = "interview/$category"
+    fun interview(category: String, interviewId: Long? = null) = 
+        if (interviewId != null) "interview/$category?interviewId=$interviewId" 
+        else "interview/$category"
     fun interviewDetail(id: Long) = "interview_detail/$id"
 }
 
@@ -65,12 +67,21 @@ fun AppNavigation() {
 
         composable(
             route = Routes.INTERVIEW,
-            arguments = listOf(navArgument("category") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("category") { type = NavType.StringType },
+                navArgument("interviewId") { 
+                    type = NavType.StringType 
+                    nullable = true 
+                }
+            )
         ) { backStackEntry ->
             val category = backStackEntry.arguments?.getString("category") ?: ""
+            val interviewIdStr = backStackEntry.arguments?.getString("interviewId")
+            val interviewId = interviewIdStr?.toLongOrNull() ?: -1L
             val interviewViewModel: InterviewViewModel = viewModel()
             InterviewScreen(
                 category = category,
+                interviewId = if (interviewId != -1L) interviewId else null,
                 interviewViewModel = interviewViewModel,
                 onExit = {
                     navController.popBackStack()
@@ -102,6 +113,11 @@ fun AppNavigation() {
                 interviewId = interviewId,
                 onBack = {
                     navController.popBackStack()
+                },
+                onResume = { id, category ->
+                    navController.navigate(Routes.interview(category, id)) {
+                        popUpTo(Routes.HISTORY)
+                    }
                 }
             )
         }

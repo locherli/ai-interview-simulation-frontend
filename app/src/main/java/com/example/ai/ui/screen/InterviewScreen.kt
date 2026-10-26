@@ -30,6 +30,7 @@ import com.example.ai.ui.viewmodel.InterviewViewModel
 @Composable
 fun InterviewScreen(
     category: String,
+    interviewId: Long? = null,
     interviewViewModel: InterviewViewModel,
     onExit: () -> Unit
 ) {
@@ -58,8 +59,12 @@ fun InterviewScreen(
     var showAbortDialog by remember { mutableStateOf(false) }
     
     // Start interview when screen opens
-    LaunchedEffect(category) {
-        interviewViewModel.startInterview(category)
+    LaunchedEffect(category, interviewId) {
+        if (interviewId != null) {
+            interviewViewModel.resumeInterview(interviewId)
+        } else {
+            interviewViewModel.startInterview(category)
+        }
     }
     
     // Auto-speak question when it arrives

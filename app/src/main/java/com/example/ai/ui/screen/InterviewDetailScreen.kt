@@ -19,7 +19,8 @@ import com.example.ai.ui.viewmodel.InterviewDetailViewModel
 fun InterviewDetailScreen(
     viewModel: InterviewDetailViewModel,
     interviewId: Long,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onResume: (Long, String) -> Unit = { _, _ -> }
 ) {
     val uiState by viewModel.uiState.collectAsState()
     
@@ -81,6 +82,22 @@ fun InterviewDetailScreen(
                     val messages = detail.messages
                     items(messages) { message ->
                         MessageCard(message)
+                    }
+                    
+                    if (detail.interview.status == "ongoing") {
+                        item {
+                            Button(
+                                onClick = { 
+                                    onResume(detail.interview.id, detail.interview.category ?: detail.interview.jobTitle) 
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp)
+                                    .height(50.dp)
+                            ) {
+                                Text("继续答题")
+                            }
+                        }
                     }
                 }
             }
